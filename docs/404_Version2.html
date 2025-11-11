@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content="0; url=/" />
+    <script>
+      // If repo is served under a subpath, set correct base (adjust '/NeuroReview/' if needed)
+      const base = document.querySelector('base') || (function(){
+        const b = document.createElement('base');
+        b.href = '/';
+        document.head.appendChild(b);
+        return b;
+      })();
+      location.replace(location.pathname + location.search + location.hash);
+    </script>
+    <title>Redirecting…</title>
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>
