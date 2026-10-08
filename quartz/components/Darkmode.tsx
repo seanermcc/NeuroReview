@@ -7,7 +7,11 @@ import { classNames } from "../util/lang"
 
 const Darkmode: QuartzComponent = ({ displayClass, cfg }: QuartzComponentProps) => {
   return (
-    <button class={classNames(displayClass, "darkmode")}>
+    <button
+      class={classNames(displayClass, "darkmode")}
+      aria-label="Toggle color theme"
+      title="Toggle color theme"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink"

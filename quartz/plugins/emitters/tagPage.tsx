@@ -12,6 +12,7 @@ import { write } from "./helpers"
 import { i18n, TRANSLATIONS } from "../../i18n"
 import { BuildCtx } from "../../util/ctx"
 import { StaticResources } from "../../util/resources"
+import { categorySlug, podcastCategories } from "../../util/podcast"
 
 interface TagPageOptions extends FullPageLayout {
   sort?: (f1: QuartzPluginData, f2: QuartzPluginData) => number
@@ -31,10 +32,11 @@ function computeTagInfo(
 
   const tagDescriptions: Record<string, ProcessedContent> = Object.fromEntries(
     [...tags].map((tag) => {
-      const title =
-        tag === "index"
-          ? i18n(locale).pages.tagContent.tagIndex
-          : `${i18n(locale).pages.tagContent.tag}: ${tag}`
+      const categoryLabel =
+        allFiles
+          .flatMap((file) => podcastCategories(file.frontmatter?.categories))
+          .find((category) => categorySlug(category) === tag) ?? tag
+      const title = tag === "index" ? "Categories" : `Category: ${categoryLabel}`
       return [
         tag,
         defaultProcessedContent({

@@ -12,8 +12,9 @@
     "url": "https://github.com/jackyzha0/quartz.git"
   },
   "scripts": {
-    "build": "npx quartz build -d content -o public",
-    "build:debug": "npx quartz build -d public && echo '---- public contents ----' && ls -la public || true",
+    "build": "node quartz/bootstrap-cli.mjs build -d content -o public",
+    "build:debug": "node quartz/bootstrap-cli.mjs build -d content -o public --verbose",
+    "dev": "node quartz/bootstrap-cli.mjs build --serve",
     "quartz": "./quartz/bootstrap-cli.mjs",
     "docs": "npx quartz build --serve -d docs",
     "check": "tsc --noEmit && npx prettier . --check",

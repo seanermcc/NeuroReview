@@ -8,6 +8,7 @@ import { htmlToJsx } from "../../util/jsx"
 import { i18n } from "../../i18n"
 import { ComponentChildren } from "preact"
 import { concatenateResources } from "../../util/resources"
+import { categorySlug, podcastCategories } from "../../util/podcast"
 
 interface TagContentOptions {
   sort?: SortFn
@@ -58,53 +59,26 @@ export default ((opts?: Partial<TagContentOptions>) => {
             <p>{content}</p>
           </article>
           <p>{i18n(cfg.locale).pages.tagContent.totalTags({ count: tags.length })}</p>
-          <div>
+          <ul class="category-index">
             {tags.map((tag) => {
               const pages = tagItemMap.get(tag)!
-              const listProps = {
-                ...props,
-                allFiles: pages,
-              }
-
-              const contentPage = allFiles.filter((file) => file.slug === `tags/${tag}`).at(0)
-
-              const root = contentPage?.htmlAst
-              const content =
-                !root || root?.children.length === 0
-                  ? contentPage?.description
-                  : htmlToJsx(contentPage.filePath!, root)
-
-              const tagListingPage = `/tags/${tag}` as FullSlug
+              const label =
+                pages
+                  .flatMap((page) => podcastCategories(page.frontmatter?.categories))
+                  .find((category) => categorySlug(category) === tag) ?? tag
+              const tagListingPage = `tags/${tag}` as FullSlug
               const href = resolveRelative(fileData.slug!, tagListingPage)
 
               return (
-                <div>
-                  <h2>
-                    <a class="internal tag-link" href={href}>
-                      {tag}
-                    </a>
-                  </h2>
-                  {content && <p>{content}</p>}
-                  <div class="page-listing">
-                    <p>
-                      {i18n(cfg.locale).pages.tagContent.itemsUnderTag({ count: pages.length })}
-                      {pages.length > options.numPages && (
-                        <>
-                          {" "}
-                          <span>
-                            {i18n(cfg.locale).pages.tagContent.showingFirst({
-                              count: options.numPages,
-                            })}
-                          </span>
-                        </>
-                      )}
-                    </p>
-                    <PageList limit={options.numPages} {...listProps} sort={options?.sort} />
-                  </div>
-                </div>
+                <li>
+                  <a class="internal tag-link" href={href}>
+                    {label}
+                  </a>
+                  <span>{pages.length}</span>
+                </li>
               )
             })}
-          </div>
+          </ul>
         </div>
       )
     } else {
@@ -129,5 +103,6 @@ export default ((opts?: Partial<TagContentOptions>) => {
   }
 
   TagContent.css = concatenateResources(style, PageList.css)
+  TagContent.afterDOMLoaded = PageList.afterDOMLoaded
   return TagContent
 }) satisfies QuartzComponentConstructor

@@ -1,5 +1,6 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
+import { PodcastMetadata } from "./quartz/plugins/transformers/podcastMetadata"
 
 const config: QuartzConfig = {
   configuration: {
@@ -10,12 +11,8 @@ const config: QuartzConfig = {
       provider: "plausible",
     },
     locale: "en-US",
-    baseUrl: "https://neuroreview.org",
-    ignorePatterns: [
-      "private",
-      "templates",
-      ".obsidian",
-    ],
+    baseUrl: "neuroreview.org",
+    ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
     theme: {
       fontOrigin: "googleFonts",
@@ -35,6 +32,7 @@ const config: QuartzConfig = {
           secondary: "#284b63",
           tertiary: "#84a59d",
           highlight: "rgba(143, 159, 169, 0.15)",
+          textHighlight: "#fff0a8",
         },
         darkMode: {
           light: "#161618",
@@ -45,6 +43,7 @@ const config: QuartzConfig = {
           secondary: "#7b97aa",
           tertiary: "#84a59d",
           highlight: "rgba(143, 159, 169, 0.15)",
+          textHighlight: "#705b20",
         },
       },
     },
@@ -52,6 +51,7 @@ const config: QuartzConfig = {
   plugins: {
     transformers: [
       Plugin.FrontMatter(),
+      PodcastMetadata(),
       Plugin.CreatedModifiedDate({
         priority: ["frontmatter", "filesystem"],
       }),
@@ -63,7 +63,7 @@ const config: QuartzConfig = {
         },
         keepBackground: false,
       }),
-      Plugin.ObsidianFlavoredMarkdown({ enableSlashtag: false }),
+      Plugin.ObsidianFlavoredMarkdown({ parseTags: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
       Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
@@ -75,10 +75,8 @@ const config: QuartzConfig = {
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
       Plugin.FolderPage(),
-      
-      // *** THIS IS THE FINAL FIX ***
-      // The correct property name is 'tagKey', not 'aliases'.
-      Plugin.TagPage({ tagKey: "categories" }),
+
+      Plugin.TagPage(),
 
       Plugin.ContentIndex({
         enableSiteMap: true,

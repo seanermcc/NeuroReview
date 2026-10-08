@@ -79,6 +79,8 @@ export default ((userOpts?: Partial<Options>) => {
         <button
           type="button"
           class="explorer-toggle mobile-explorer hide-until-loaded"
+          aria-label="Toggle podcast navigation"
+          title="Toggle podcast navigation"
           data-mobile={true}
           aria-controls={id}
         >

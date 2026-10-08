@@ -3,6 +3,7 @@ import { QuartzPluginData } from "../plugins/vfile"
 import { Date, getDate } from "./Date"
 import { QuartzComponent, QuartzComponentProps } from "./types"
 import { GlobalConfiguration } from "../cfg"
+import EpisodeList, { byRating } from "./EpisodeList"
 
 export type SortFn = (f1: QuartzPluginData, f2: QuartzPluginData) => number
 
@@ -57,9 +58,24 @@ type Props = {
   sort?: SortFn
 } & QuartzComponentProps
 
-export const PageList: QuartzComponent = ({ cfg, fileData, allFiles, limit, sort }: Props) => {
+export const PageList: QuartzComponent = (props: Props) => {
+  const { cfg, fileData, allFiles, limit, sort } = props
+  const episodes = allFiles.filter((page) => page.frontmatter?.id).sort(sort ?? byRating)
+  const otherPages = allFiles.filter((page) => !page.frontmatter?.id)
+  if (episodes.length) {
+    return (
+      <>
+        {otherPages.length > 0 && <PageList {...props} allFiles={otherPages} />}
+        <EpisodeList
+          {...props}
+          allFiles={limit ? episodes.slice(0, limit) : episodes}
+          compact={Boolean(limit)}
+        />
+      </>
+    )
+  }
   const sorter = sort ?? byDateAndAlphabeticalFolderFirst(cfg)
-  let list = allFiles.sort(sorter)
+  let list = [...allFiles].sort(sorter)
   if (limit) {
     list = list.slice(0, limit)
   }
@@ -102,6 +118,8 @@ export const PageList: QuartzComponent = ({ cfg, fileData, allFiles, limit, sort
     </ul>
   )
 }
+
+PageList.afterDOMLoaded = EpisodeList.afterDOMLoaded
 
 PageList.css = `
 .section h3 {
